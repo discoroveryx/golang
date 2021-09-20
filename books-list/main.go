@@ -7,9 +7,18 @@ import (
 
     "github.com/gin-gonic/gin"
 )
- 
+
+
+func CORSMiddlware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+    }
+}
+
+
 func main() {
-    router := gin.Default()
+    router := gin.New()
+    router.Use(CORSMiddlware())
     router.GET("/books/", book_list)
     router.Run(":80")
 }
@@ -18,17 +27,25 @@ func main() {
 var response_json = `
 [
     {
+        "id":1,
         "name":"Книга 1 название",
         "title":"Книга 1 описание"
     },
     {
+        "id":2,
         "name":"Книга 2 название",
         "title":"Книга 2 описание"
+    },
+    {
+        "id":3,
+        "name":"Книга 3 название",
+        "title":"Книга 3 описание"
     }
 ]
 `
 
 type book struct {
+    Id      int     `json:"id"`
     Name    string  `json:"name"`
     Title   string  `json:"title"`
 }
@@ -47,6 +64,9 @@ func book_list(c *gin.Context) {
     }
 
     fmt.Println(response_result)
+
+    // headers := httpHeaders{}
+    // c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 
     c.JSON(http.StatusOK, response_result)
 }
